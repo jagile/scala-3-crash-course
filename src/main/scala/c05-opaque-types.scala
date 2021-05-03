@@ -39,11 +39,15 @@ object OpaqueTypesUsage:
 //
 object OpaqueTypeExercises:
   import java.util.Locale
-  final case class Country private (code: String) extends AnyVal
-  object Country {
-    private val validCodes = Locale.getISOCountries
 
-    private def apply(code: String): Country = new Country(code)
+  opaque type Country = String
+
+  extension(c: Country) def code: String = c
+
+  object Country:
+    def apply(code: String): Country = code
+
+    private val validCodes = Locale.getISOCountries
 
     def fromIso2CountryCode(code: String): Option[Country] = Some(code).filter(validCodes.contains).map(Country.apply)
 
@@ -54,7 +58,7 @@ object OpaqueTypeExercises:
 
     val Germany: Country = Country("DE")
     val UnitedKingdom: Country = Country("GB")
-  }
+
 
 @main def opaqueTypeExercisesMain =
   import OpaqueTypeExercises._

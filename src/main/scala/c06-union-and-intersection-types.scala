@@ -51,6 +51,32 @@ object UnionTypes:
 // What pros/cons do you see when you use a union type vs enums in modeling ADTs?
 //
 
+
+
+object test1 {
+  trait PaymentAuthorizationError(retriable: Boolean)
+  case class IllegalPaymentStatus(existingPaymentId: PaymentId, existingPaymentStatus: PaymentStatus) extends PaymentAuthorizationError(retriable = false)
+  case class IllegalRequestData(reason: String) extends PaymentAuthorizationError(retriable = false)
+  case class CustomerUnknown(unknownCustomerId: CustomerId) extends PaymentAuthorizationError(retriable = false)
+  case class InvalidToken(invalidToken: Token) extends PaymentAuthorizationError(retriable = true)
+
+  type PaymentAuthorizationError3 = IllegalPaymentStatus | IllegalRequestData | CustomerUnknown | InvalidToken
+  val x: PaymentAuthorizationError3 = ???
+  x match {
+    case _ : IllegalPaymentStatus => ???
+    case _ => ???
+  }
+}
+
+// Some type aliases to make the exercise compile...
+// We'll later see how to replace type aliases the new kind of types in Scala 3
+// called *opaque types* for better type safety.
+type PaymentId = String
+type PaymentStatus = String
+type CustomerId = String
+type Token = String
+
+
 object IntersectionTypes:
   /**
    * Example 1: Basics
@@ -76,6 +102,7 @@ object IntersectionTypes:
   object Example21:
     trait A:
       def foo: String
+
     trait B:
       def foo: Int
 
@@ -84,6 +111,7 @@ object IntersectionTypes:
   object Example22:
     trait A:
       def foo: Boolean
+
     trait B:
       def foo: Boolean
 
@@ -96,9 +124,11 @@ object IntersectionTypes:
    */
   trait Foo:
     def f: AnyVal
-  trait A extends Foo:
+
+  trait A extends Foo :
     override def f: Boolean
-  trait B extends Foo:
+
+  trait B extends Foo :
     override def f: AnyVal
 
 // btw. there's a nice talk by Dean Wampler that thoroughly explains

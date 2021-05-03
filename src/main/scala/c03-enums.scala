@@ -37,34 +37,33 @@ object enumsExercises:
   //
   // Exercise 1: Convert to Scala 3 enum syntax.
   //
-  sealed trait OrderStatus {
+  enum OrderStatus:
+    case Initiated
+    case Cancelled
+    case Confirmed
+    case Fulfilled
+    case Refunded
+    case Failed
+
+
     final def isLegalSuccessorOf(status: OrderStatus): Boolean =
       OrderStatus.legalSuccessors.getOrElse(status, Set.empty).contains(this)
-  }
-  object OrderStatus {
-    case object Initiated extends OrderStatus
-    case object Cancelled extends OrderStatus
-    case object Confirmed extends OrderStatus
-    case object Fulfilled extends OrderStatus
-    case object Refunded extends OrderStatus
-    case object Failed extends OrderStatus
 
+  object OrderStatus:
     private val legalSuccessors: Map[OrderStatus, Set[OrderStatus]] = Map(
       Initiated -> Set(Confirmed, Cancelled),
       Confirmed -> Set(Fulfilled, Failed),
       Fulfilled -> Set(Refunded, Failed)
     )
-  }
 
   //
   // Exercise 2: Implement the following ADT using the new Scala 3 enum sytanx.
   //
-  sealed abstract class PaymentAuthorizationError(retriable: Boolean)
-  case class IllegalPaymentStatus(existingPaymentId: PaymentId, existingPaymentStatus: PaymentStatus)
-      extends PaymentAuthorizationError(retriable = false)
-  case class IllegalRequestData(reason: String) extends PaymentAuthorizationError(retriable = false)
-  case class CustomerUnknown(unknownCustomerId: CustomerId) extends PaymentAuthorizationError(retriable = false)
-  case class InvalidToken(invalidToken: Token) extends PaymentAuthorizationError(retriable = true)
+  enum PaymentAuthorizationError(retriable: Boolean):
+    case IllegalPaymentStatus(existingPaymentId: PaymentId, existingPaymentStatus: PaymentStatus) extends PaymentAuthorizationError(retriable = false)
+    case IllegalRequestData(reason: String) extends PaymentAuthorizationError(retriable = false)
+    case CustomerUnknown(unknownCustomerId: CustomerId) extends PaymentAuthorizationError(retriable = false)
+    case InvalidToken(invalidToken: Token) extends PaymentAuthorizationError(retriable = true)
 
   // Some type aliases to make the exercise compile...
   // We'll later see how to replace type aliases the new kind of types in Scala 3

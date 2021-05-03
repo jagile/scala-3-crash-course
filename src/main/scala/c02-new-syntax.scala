@@ -24,10 +24,10 @@ object BracelessSyntaxExamples {
   /**
    * Example 2: Braceless pattern matching.
    */
-  "something" match {
+  "something" match
     case "something" => ???
     case _           => ???
-  }
+
 
   /**
    * Example 3: Braceless conditionals.
@@ -91,38 +91,34 @@ object BracelessSyntaxExamples {
 //
 // Exercise 1: Convert the following code to the new Scala 3 braceless syntax.
 //
-object BracelessSyntaxExercise {
+object BracelessSyntaxExercise:
 
   sealed trait PaymentMethod
   case object CreditCard extends PaymentMethod
   case object Paypal extends PaymentMethod
-  object PaymentMethod {
-    def fromString(input: String): Option[PaymentMethod] = input match {
+
+  object PaymentMethod:
+    def fromString(input: String): Option[PaymentMethod] = input match
       case "credit_card" => Some(CreditCard)
       case "paypal"      => Some(CreditCard)
       case _             => None
-    }
-  }
 
-  trait PaymentService {
+
+  trait PaymentService:
     def authorize(amount: BigDecimal, method: PaymentMethod): Unit
-  }
-  class PaymentServiceImpl extends PaymentService {
-    def authorize(amount: BigDecimal, method: PaymentMethod): Unit = {
+
+  class PaymentServiceImpl extends PaymentService:
+    def authorize(amount: BigDecimal, method: PaymentMethod): Unit =
       println("Authorizing a payment.")
-      for {
+      for
         _ <- validate(amount, method)
         _ <- callStripe(amount, method)
-      } yield ()
-    }
+      yield ()
 
     private def validate(amount: BigDecimal, method: PaymentMethod): Either[String, Unit] =
-      if (amount > 0) {
+      if (amount > 0)
         ???
-      } else {
+      else
         ???
-      }
 
     private def callStripe(amount: BigDecimal, method: PaymentMethod): Either[String, Unit] = ???
-  }
-}

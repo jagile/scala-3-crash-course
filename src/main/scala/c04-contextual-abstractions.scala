@@ -63,14 +63,20 @@ object ImplicitParams:
   // Hint: You can use java.time.Duration.between(one, two).
   import java.time.* // In Scala 3 `*` is the wildcard import and not `_` anymore.
 
+  extension(t1: Instant)
+    def -(t2: Instant): Long = t1.getNano - t2.getNano
+
 // The following should compile:
-// println(Instant.now() - Instant.now())
+  println(Instant.now() - Instant.now())
 
 // Exercise 2: Implement def +(thatTuple: Tuple2[A, B]) function on the Tuple2
 // Hint: Use the Numeric type class (https://www.scala-lang.org/api/current/scala/math/Numeric.html).
 
+  extension(x: (Int, Double))
+    def +(y: (Int, Double)) = (x._1 + y._1, x._2 + y._2)
+
 // The following should compile:
-// println((2, 2.1) + (3, 4.0)) // result: (5, 6.1)
+  println((2, 2.1) + (3, 4.0)) // result: (5, 6.1)
 
 /**
  * Chapter 3.3: Type classes
@@ -113,15 +119,23 @@ object TypeclassesExercises:
   // - instance for Option
   // - syntax
   trait Monad[F[_]]:
-    def bind[A, B](fa: F[A])(f: A => F[B]): F[B]
-    def unit[A](x: A): F[A]
-  ???
+    extension[A](fa: F[A]) def bind[B](f: A => F[B]): F[B]
+    extension[A](a: A) def unit: F[A]
+
+  given Monad[Option] with
+    extension[A](fa: Option[A]) def bind[B](f: A => Option[B]): Option[B] = fa.fold(None)(f)
+    extension[A](a: A) def unit: Option[A] = Option(a)
+
+  @main def testit = println(Option(5).bind(i => Option(i.toString)))
 
 /**
  * Chapter 3.4: Implicit conversions
  */
 object ImplicitConversions:
   implicit def booleanToString(input: Boolean): String = input.toString
+
+  given Conversion[Boolean, String] with
+    def apply(input: Boolean): String = input.toString
 
   def identity(input: String): String = input
   identity(true)
@@ -144,8 +158,8 @@ object Instances:
   given Conversion[Boolean, String] with
     def apply(input: Boolean): String = input.toString
 object Scoping:
-  // import Instances._
-  // summon[String]
+  import Instances.given
+  summon[String]
   // "a".to42
   // val str: String = false
   ???
